@@ -1,0 +1,93 @@
+name: LogiHaul CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  dbt-ci:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: logihaul
+          POSTGRES_PASSWORD: ci_password
+          POSTGRES_DB: logihaul
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U logihaul -d logihaul"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy Faker "psycopg[binary]" dbt-postgres
+
+      - name: Create raw database schema
+        env:
+          PGPASSWORD: ci_password
+        run: |
+          psql \
+            -h localhost \
+            -p 5432 \
+            -U logihaul \
+            -d logihaul \
+            -f scripts/raw_schema.sql
+
+      - name: Generate CI test data
+        env:
+          LOGIHAUL_NUM_DRIVERS: 50
+          LOGIHAUL_NUM_VEHICLES: 40
+          LOGIHAUL_NUM_ROUTES: 10
+          LOGIHAUL_SIM_MONTHS: 1
+        run: |
+          python data_generator/generate.py
+
+      - name: Load test data
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: logihaul
+          PGPASSWORD: ci_password
+          PGDATABASE: logihaul
+        run: |
+          python load_raw.py
+
+      - name: Create dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml <<'EOF'
+          logihaul:
+            target: ci
+            outputs:
+              ci:
+                type: postgres
+                host: localhost
+                port: 5432
+                user: logihaul
+                password: ci_password
+                dbname: logihaul
+                schema: analytics
+                threads: 4
+          EOF
+
+      - name: Run dbt build
+        working-directory: dbt_project
+        run: |
+          dbt build

@@ -35,10 +35,10 @@ rng = np.random.default_rng(42)
 # ---------------------------------------------------------------------------
 # CONFIG
 # ---------------------------------------------------------------------------
-NUM_DRIVERS = 5_500
-NUM_VEHICLES = 5_000
-NUM_ROUTES = 200
-SIM_MONTHS = 6
+NUM_DRIVERS = int(os.getenv("LOGIHAUL_NUM_DRIVERS", "5500"))
+NUM_VEHICLES = int(os.getenv("LOGIHAUL_NUM_VEHICLES", "5000"))
+NUM_ROUTES = int(os.getenv("LOGIHAUL_NUM_ROUTES", "200"))
+SIM_MONTHS = int(os.getenv("LOGIHAUL_SIM_MONTHS", "6"))
 SIM_END = datetime(2026, 8, 28)
 SIM_START = SIM_END - timedelta(days=30 * SIM_MONTHS)
 

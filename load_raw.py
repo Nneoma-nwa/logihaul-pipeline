@@ -4,15 +4,14 @@ import psycopg
 
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(PROJECT_ROOT, "data")
-
+DATA_DIR = os.getenv("LOGIHAUL_DATA_DIR", os.path.join(PROJECT_ROOT, "data"))
 
 DB_CONFIG = {
-    "host": "localhost",
-    "port": 5432,
-    "dbname": "logihaul",
-    "user": "logihaul",
-    "password": "Admin",
+    "host": os.getenv("PGHOST", "localhost"),
+    "port": int(os.getenv("PGPORT", "5432")),
+    "dbname": os.getenv("PGDATABASE", "logihaul"),
+    "user": os.getenv("PGUSER", "logihaul"),
+    "password": os.getenv("PGPASSWORD", "Admin"),
 }
 
 
