@@ -1,0 +1,80 @@
+version: 2
+
+models:
+  - name: stg_drivers
+    columns:
+      - name: driver_id
+        tests:
+          - unique
+          - not_null
+
+      - name: phone_number
+        tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['active', 'inactive', 'suspended']
+
+  - name: stg_vehicles
+    columns:
+      - name: vehicle_id
+        tests:
+          - unique
+          - not_null
+
+      - name: vehicle_type
+        tests:
+          - accepted_values:
+              values: ['van', 'truck', 'trailer']
+
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['active', 'decommissioned', 'in_maintenance']
+
+  - name: stg_trips
+    columns:
+      - name: trip_id
+        tests:
+          - unique
+          - not_null
+
+      - name: vehicle_id
+        tests:
+          - relationships:
+              to: ref('stg_vehicles')
+              field: vehicle_id
+              config:
+                severity: warn
+
+      - name: driver_id
+        tests:
+          - relationships:
+              to: ref('stg_drivers')
+              field: driver_id
+
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['cancelled', 'completed', 'in_progress']
+
+  - name: stg_deliveries
+    columns:
+      - name: delivery_id
+        tests:
+          - not_null
+
+      - name: trip_id
+        tests:
+          - relationships:
+              to: ref('stg_trips')
+              field: trip_id
+
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['delivered', 'failed', 'returned']

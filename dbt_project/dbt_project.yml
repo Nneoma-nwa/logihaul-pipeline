@@ -1,0 +1,17 @@
+name: 'logihaul'
+version: '1.0.0'
+config-version: 2
+
+profile: 'logihaul'
+
+model-paths: ["models"]
+test-paths: ["tests"]
+
+models:
+  logihaul:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table

@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: logihaul-postgres
+    environment:
+      POSTGRES_USER: logihaul
+      POSTGRES_PASSWORD: Admin
+      POSTGRES_DB: logihaul
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  metabase:
+    image: metabase/metabase:latest
+    container_name: logihaul-metabase
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:

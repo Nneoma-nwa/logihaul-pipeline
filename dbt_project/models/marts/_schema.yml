@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: fct_trips
+    description: "One row per trip, containing trip-level operational and cost metrics."
+    columns:
+      - name: trip_id
+        description: "Unique identifier for a trip."
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_deliveries
+    description: "One row per delivery event, identified by delivery_id and trip_id."
+    columns:
+      - name: delivery_key
+        description: "Composite key identifying a unique delivery event."
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_vehicle_performance
+    description: "One row per vehicle containing fleet activity metrics."
+    columns:
+      - name: vehicle_id
+        description: "Unique identifier for the vehicle."
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_vehicle
+    description: "One row per vehicle with descriptive vehicle attributes."
+    columns:
+      - name: vehicle_id
+        description: "Unique identifier for the vehicle."
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_driver
+    description: "One row per driver with descriptive driver attributes."
+    columns:
+      - name: driver_id
+        description: "Unique identifier for the driver."
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_route
+    description: "One row per route with descriptive route attributes."
+    columns:
+      - name: route_id
+        description: "Unique identifier for the route."
+        tests:
+          - unique
+          - not_null

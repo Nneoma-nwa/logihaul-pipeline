@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    tables:
+      - name: drivers
+      - name: vehicles
+      - name: routes
+      - name: trips
+      - name: deliveries
+      - name: maintenance_events
+      - name: operating_costs
